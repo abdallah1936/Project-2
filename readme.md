@@ -9,13 +9,18 @@ This will be a workout tracking app. The user would need to insert a muscle that
 
 ### ERDs
 
+Comming Later Today
 
 ### Restful Routing Chart
 
+![Restful-routing-chart](./Screenshot%202023-04-07%20at%201.37.35%20PM.png)
 
 ### Wireframes of all user views
 
-
+![wireframe-profile](Pics.png/Profile.png)
+![wireframe-login](Pics.png/login.png)
+![wireframe-new](Pics.png/new.png)
+![wireframe-home](Pics.png/Home.png)
 ### User Stories
 
 * As a user, I desire to save data regarding my workouts.
