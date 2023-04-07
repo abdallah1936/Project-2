@@ -9,8 +9,7 @@ This will be a workout tracking app. The user would need to insert a muscle that
 
 ### ERDs
 
-Comming Later Today
-
+![ERD's](Pics.png/ERD'S.png)
 ### Restful Routing Chart
 
 ![Restful-routing-chart](Pics.png/restful-routing.png)
