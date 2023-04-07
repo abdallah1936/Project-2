@@ -10,16 +10,18 @@ This will be a workout tracking app. The user would need to insert a muscle that
 ### ERDs
 
 ![ERD's](Pics.png/ERD'S.png)
+
 ### Restful Routing Chart
 
-![Restful-routing-chart](Pics.png/restful-routing.png)
+![Restful-routing-chart](Pics.png/restfulChart.png)
 
 ### Wireframes of all user views
 
-![wireframe-profile](Pics.png/Profile.png)
+![wireframe-exercises](Pics.png/exercises.png)
 ![wireframe-login](Pics.png/login.png)
 ![wireframe-new](Pics.png/new.png)
 ![wireframe-home](Pics.png/Home.png)
+
 ### User Stories
 
 * As a user, I desire to save data regarding my workouts.
