@@ -13,7 +13,7 @@ Comming Later Today
 
 ### Restful Routing Chart
 
-![Restful-routing-chart](./Screenshot%202023-04-07%20at%201.37.35%20PM.png)
+![Restful-routing-chart](Pics.png/restful-routing.png)
 
 ### Wireframes of all user views
 
