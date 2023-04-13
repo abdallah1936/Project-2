@@ -9,6 +9,16 @@ const sequelize = new Sequelize(
     port: process.env.DB_PORT,
     dialect: 'postgres',
   }
-);
-
-module.exports = sequelize;
+  );
+  
+  module.exports = sequelize;
+  {
+    "development": {
+      "database": "project_two_auth",
+      "host": "127.0.0.1",
+      "dialect":"postgres"
+    },
+    "production": {
+      "use_env_variable": "DATABASE_URL"
+    }
+  }
