@@ -1,0 +1,30 @@
+<%- include('../partials/header.ejs', { title: 'Dashboard' }) %>
+
+<h1>Dashboard</h1>
+<h2>Workouts</h2>
+<ul>
+    <% workouts.forEach(workout => { %>
+        <li>
+            <%= workout.name %>
+            <form action="/workout/favorite" method="post">
+                <input type="hidden" name="workoutId" value="<%= workout.id %>">
+                <input type="hidden" name="workoutName" value="<%= workout.name %>">
+                <button type="submit">Add to favorites</button>
+            </form>
+        </li>
+    <% }); %>
+</ul>
+<h2>Favorite Workouts</h2>
+<ul>
+    <% favorites.forEach(favorite => { %>
+        <li>
+            <%= favorite.workoutName %>
+            <form action="/workout/favorite/<%= favorite.id %>" method="post">
+                <input type="hidden" name="_method" value="DELETE">
+                <button type="submit">Remove from favorites</button>
+            </form>
+        </li>
+    <% }); %>
+</ul>
+
+<%- include('../partials/footer.ejs') %>
