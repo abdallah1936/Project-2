@@ -43,3 +43,17 @@ This will be a workout tracking app. The user would need to insert a muscle that
 * Be able to link either a picture or a video with diffrent workouts.
 * Incorprate a way to insert someone's weight.
 * Have a way to show the user a recommended workout 
+
+
+### Sorces 
+* passport-local
+https://www.passportjs.org/packages/passport-local/
+
+* https://developer.mozilla.org/en-US/docs/Learn/Server-side/Express_Nodejs/mongoose
+
+* https://blog.appsignal.com/2022/09/14/secure-your-nodejs-app-with-json-web-tokens.html
+
+* https://axios-http.com/docs/intro
+
+* https://expressjs.com/en/resources/middleware/cookie-parser.html
+

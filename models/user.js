@@ -2,6 +2,8 @@ const { DataTypes } = require('sequelize');
 const sequelize = require('../config/database');
 const passportLocalMongoose = require('passport-local-mongoose');
 
+
+
 const user = sequelize.define('user', {
   id: {
     type: DataTypes.INTEGER,
@@ -25,6 +27,6 @@ const user = sequelize.define('user', {
 });
 
 
-user.plugin(passportLocalMongoose);
+
 
 module.exports = user;

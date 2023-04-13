@@ -8,6 +8,7 @@ const authRoutes = require('./routes/auth');
 const workoutRoutes = require('./routes/workout');
 
 app.use(express.urlencoded({ extended: true }));
+const PORT = process.env.PORT || 8000
 app.set('view engine', 'ejs');
 
 app.use(session({
