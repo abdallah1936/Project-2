@@ -1,5 +1,16 @@
-<%- include("./partials/header.ejs") %>
-
-<h1><strong>Are you Ready?</strong></h1>
-
-<%- include("./partials/footer.ejs") %>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home</title>
+</head>
+<body>
+    <% include partials/header %>
+    
+    <h1>Welcome to our Workout App</h1>
+    <p><a href="/users/login">Login</a> or <a href="/users/register">Register</a> to get started.</p>
+    
+    <% include partials/footer %>
+</body>
+</html>

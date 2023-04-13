@@ -1,19 +1,35 @@
 const { Workout, user, favoriteWorkout, associations } = require('../models');
 
-const getAllWorkouts = async (req, res) => {
+const dashboard = async (req, res) => {
   try {
-    const workouts = await Workout.findAll({ include: user });
-    res.status(200).json(workouts);
+    const workouts = await Workout.findAll({ where: { userId: req.user.id } });
+    res.render('dashboard', { workouts });
   } catch (error) {
     res.status(500).json({ message: 'Error retrieving workouts', error });
   }
 };
 
-const getWorkoutById = async (req, res) => {
+const newWorkout_get = async (req, res) => {
+  res.render('workouts/new');
+};
+
+const newWorkout_post = async (req, res) => {
+  try {
+    const newWorkout = await Workout.create({
+      ...req.body,
+      userId: req.user.id,
+    });
+    res.redirect(`/workouts/${newWorkout.id}`);
+  } catch (error) {
+    res.status(500).json({ message: 'Error creating workout', error });
+  }
+};
+
+const workoutDetails = async (req, res) => {
   try {
     const workout = await Workout.findByPk(req.params.id, { include: user });
     if (workout) {
-      res.status(200).json(workout);
+      res.render('workouts/show', { workout });
     } else {
       res.status(404).json({ message: 'Workout not found' });
     }
@@ -22,24 +38,25 @@ const getWorkoutById = async (req, res) => {
   }
 };
 
-const createWorkout = async (req, res) => {
+const editWorkout_get = async (req, res) => {
   try {
-    const newWorkout = await Workout.create({
-      ...req.body,
-      userId: req.user.id,
-    });
-    res.status(201).json(newWorkout);
+    const workout = await Workout.findByPk(req.params.id);
+    if (workout) {
+      res.render('workouts/edit', { workout });
+    } else {
+      res.status(404).json({ message: 'Workout not found' });
+    }
   } catch (error) {
-    res.status(500).json({ message: 'Error creating workout', error });
+    res.status(500).json({ message: 'Error retrieving workout', error });
   }
 };
 
-const updateWorkout = async (req, res) => {
+const editWorkout_post = async (req, res) => {
   try {
     const workout = await Workout.findByPk(req.params.id);
     if (workout) {
       await workout.update(req.body);
-      res.status(200).json(workout);
+      res.redirect(`/workouts/${workout.id}`);
     } else {
       res.status(404).json({ message: 'Workout not found' });
     }
@@ -53,7 +70,7 @@ const deleteWorkout = async (req, res) => {
     const workout = await Workout.findByPk(req.params.id);
     if (workout) {
       await workout.destroy();
-      res.status(204).json({ message: 'Workout deleted' });
+      res.redirect('/dashboard');
     } else {
       res.status(404).json({ message: 'Workout not found' });
     }
@@ -63,9 +80,11 @@ const deleteWorkout = async (req, res) => {
 };
 
 module.exports = {
-  getAllWorkouts,
-  getWorkoutById,
-  createWorkout,
-  updateWorkout,
+  dashboard,
+  newWorkout_get,
+  newWorkout_post,
+  workoutDetails,
+  editWorkout_get,
+  editWorkout_post,
   deleteWorkout,
 };

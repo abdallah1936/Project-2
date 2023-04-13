@@ -1,36 +1,35 @@
 const express = require('express');
 const app = express();
-const path = require('path');
-const workoutRoutes = require('./routes/workout');
+const session = require('express-session');
+const passport = require('passport');
+const LocalStrategy = require('passport-local').Strategy;
+const User = require('./models/user');
 const authRoutes = require('./routes/auth');
-const isLoggedIn = require('./middlewares/auth').isLoggedIn;
+const workoutRoutes = require('./routes/workout');
 
-// Set up view engine
+app.use(express.urlencoded({ extended: true }));
 app.set('view engine', 'ejs');
-app.set('views', path.join(__dirname, 'views'));
 
-// Middleware for parsing request body
-app.use(express.urlencoded({ extended: false }));
-app.use(express.json());
+app.use(session({
+    secret: 'your-session-secret',
+    resave: false,
+    saveUninitialized: true
+}));
 
-// Serve static files
-app.use(express.static(path.join(__dirname, 'public')));
+passport.use(new LocalStrategy(User.authenticate()));
+passport.serializeUser(User.serializeUser());
+passport.deserializeUser(User.deserializeUser());
 
-// Routes
-app.get('/', (req, res) => {
-  res.render('index');
-});
+app.use(passport.initialize());
+app.use(passport.session());
 
-app.use('/workout', workoutRoutes);
 app.use('/auth', authRoutes);
+app.use('/workouts', workoutRoutes);
 
-// Catch-all 404 route
-app.use((req, res) => {
-  res.status(404).send('Page not found');
+app.get('/', (req, res) => {
+    res.render('index');
 });
 
-// Start the server
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
+app.listen(3000, () => {
+    console.log('Server started on port 3000');
 });

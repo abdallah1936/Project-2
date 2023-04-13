@@ -1,7 +1,11 @@
 const bcrypt = require('bcrypt');
 const { user } = require('../models');
 
-const register = async (req, res) => {
+exports.signup_get = (req, res) => {
+  res.render('users/register');
+};
+
+exports.signup_post = async (req, res) => {
   try {
     const { username, password } = req.body;
     const hashedPassword = await bcrypt.hash(password, 10);
@@ -18,26 +22,15 @@ const register = async (req, res) => {
   }
 };
 
-const login = (req, res) => {
+exports.login_get = (req, res) => {
+  res.render('users/login');
+};
+
+exports.login_post = (req, res) => {
   res.status(200).json(req.user);
 };
 
-const logout = (req, res) => {
+exports.logout = (req, res) => {
   req.logout();
   res.status(200).json({ message: 'Logged out successfully' });
-};
-
-const getCurrentUser = (req, res) => {
-  if (req.user) {
-    res.status(200).json(req.user);
-  } else {
-    res.status(401).json({ message: 'Not authenticated' });
-  }
-};
-
-module.exports = {
-  register,
-  login,
-  logout,
-  getCurrentUser,
 };
