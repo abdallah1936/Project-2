@@ -6,10 +6,13 @@ const LocalStrategy = require('passport-local').Strategy;
 const User = require('./models/user');
 const authRoutes = require('./routes/auth');
 const workoutRoutes = require('./routes/workout');
+const bodyParser = require("body-parser");
+const path = require("path");
 
 app.use(express.urlencoded({ extended: true }));
 const PORT = process.env.PORT || 8000
 app.set('view engine', 'ejs');
+app.set("views", path.join(__dirname, "views"));
 
 app.use(session({
     secret: 'your-session-secret',
