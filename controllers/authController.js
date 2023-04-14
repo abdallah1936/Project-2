@@ -3,7 +3,7 @@ const passport = require('passport');
 const User = require('../models/user');
 
 exports.getLogin = (req, res) => {
-  res.render('users/login');
+  res.render('users/login', { user: req.user });
 };
 
 
@@ -16,7 +16,7 @@ exports.postLogin = (req, res, next) => {
 };
 
 exports.getRegister = (req, res) => {
-  res.render('users/register');
+  res.render('users/register', { user: req.user });
 };
 
 exports.postRegister = async (req, res) => {

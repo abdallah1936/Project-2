@@ -3,14 +3,14 @@ const { Workout, user, favoriteWorkout, associations } = require('../models');
 const dashboard = async (req, res) => {
   try {
     const workouts = await Workout.findAll({ where: { userId: req.user.id } });
-    res.render('dashboard', { workouts });
+    res.render('dashboard', { workouts, user: req.user });
   } catch (error) {
     res.status(500).json({ message: 'Error retrieving workouts', error });
   }
 };
 
 const newWorkout_get = async (req, res) => {
-  res.render('workouts/new');
+  res.render('workouts/new', { user: req.user });
 };
 
 const newWorkout_post = async (req, res) => {
@@ -29,7 +29,7 @@ const workoutDetails = async (req, res) => {
   try {
     const workout = await Workout.findByPk(req.params.id, { include: user });
     if (workout) {
-      res.render('workouts/show', { workout });
+      res.render('workouts/show', { workout, user: req.user });
     } else {
       res.status(404).json({ message: 'Workout not found' });
     }
@@ -42,7 +42,7 @@ const editWorkout_get = async (req, res) => {
   try {
     const workout = await Workout.findByPk(req.params.id);
     if (workout) {
-      res.render('workouts/edit', { workout });
+      res.render('workouts/edit', { workout, user: req.user });
     } else {
       res.status(404).json({ message: 'Workout not found' });
     }
