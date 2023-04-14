@@ -3,8 +3,9 @@ const passport = require('passport');
 const User = require('../models/user');
 
 exports.getLogin = (req, res) => {
-  res.render('users/login');
+  res.render('users/login', { user: null });
 };
+
 
 exports.postLogin = (req, res, next) => {
   passport.authenticate('local', {
@@ -15,8 +16,9 @@ exports.postLogin = (req, res, next) => {
 };
 
 exports.getRegister = (req, res) => {
-  res.render('users/register');
+  res.render('users/register', { user: null });
 };
+
 exports.postRegister = async (req, res) => {
   try {
     const hashedPassword = await bcrypt.hash(req.body.password, 10);
