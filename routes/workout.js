@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const workoutController = require('../controllers/workoutController');
-const isLoggedIn = require("../middlewares/auth");
+const { isLoggedIn, isLoggedOut } = require("../middlewares/auth");
 
 router.get('/dashboard', isLoggedIn, workoutController.dashboard);
 router.get('/workouts/new', isLoggedIn, workoutController.newWorkout_get);

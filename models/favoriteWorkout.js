@@ -1,32 +1,38 @@
-const { DataTypes } = require('sequelize');
-const sequelize = require('../config/database');
-
-const FavoriteWorkout = sequelize.define('favoriteWorkout', {
-  id: {
-    type: DataTypes.INTEGER,
-    primaryKey: true,
-    autoIncrement: true,
-  },
-  userId: {
-    type: DataTypes.INTEGER,
-    allowNull: false,
-    references: {
-      model: 'users',
-      key: 'id',
+module.exports = (sequelize, DataTypes) => {
+  const FavoriteWorkout = sequelize.define("FavoriteWorkout", {
+    id: {
+      type: DataTypes.INTEGER,
+      primaryKey: true,
+      autoIncrement: true
     },
-  },
-  workoutId: {
-    type: DataTypes.INTEGER,
-    allowNull: false,
-    references: {
-      model: 'workouts',
-      key: 'id',
+    userId: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      references: {
+        model: 'Users',
+        key: 'id'
+      }
     },
-  },
-  workoutName: {
-    type: DataTypes.STRING,
-    allowNull: false,
-  },
-});
+    workoutId: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      references: {
+        model: 'Workouts',
+        key: 'id'
+      }
+    }
+  });
 
-module.exports = FavoriteWorkout;
+  FavoriteWorkout.associate = (models) => {
+    FavoriteWorkout.belongsTo(models.User, {
+      foreignKey: 'userId',
+      as: 'user'
+    });
+    FavoriteWorkout.belongsTo(models.Workout, {
+      foreignKey: 'workoutId',
+      as: 'workout'
+    });
+  };
+
+  return FavoriteWorkout;
+};

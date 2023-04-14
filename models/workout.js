@@ -1,28 +1,26 @@
-const { DataTypes } = require('sequelize');
-const sequelize = require('../config/database');
-
-const workout = sequelize.define('workout', {
-  id: {
-    type: DataTypes.INTEGER,
-    primaryKey: true,
-    autoIncrement: true,
-  },
-  userId: {
-    type: DataTypes.INTEGER,
-    allowNull: false,
-    references: {
-      model: 'users',
-      key: 'id',
+module.exports = (sequelize, DataTypes) => {
+  const Workout = sequelize.define("Workout", {
+    id: {
+      type: DataTypes.INTEGER,
+      primaryKey: true,
+      autoIncrement: true
     },
-  },
-  name: {
-    type: DataTypes.STRING,
-    allowNull: false,
-  },
-  description: {
-    type: DataTypes.TEXT,
-    allowNull: true,
-  },
-});
+    name: {
+      type: DataTypes.STRING,
+      allowNull: false
+    },
+    description: {
+      type: DataTypes.TEXT,
+      allowNull: true
+    }
+  });
 
-module.exports = workout;
+  Workout.associate = (models) => {
+    Workout.hasMany(models.FavoriteWorkout, {
+      foreignKey: 'workoutId',
+      as: 'favorites'
+    });
+  };
+
+  return Workout;
+};
