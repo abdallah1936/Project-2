@@ -1,4 +1,4 @@
-const bcrypt = require('bcrypt');
+const bcrypt = require('bcryptjs');
 const passport = require('passport');
 const User = require('../models/user');
 
@@ -6,16 +6,17 @@ exports.getLogin = (req, res) => {
   res.render('users/login');
 };
 
-exports.postLogin = passport.authenticate('local', {
-  successRedirect: '/dashboard',
-  failureRedirect: '/auth/login',
-  failureFlash: true,
-});
+exports.postLogin = (req, res, next) => {
+  passport.authenticate('local', {
+    successRedirect: '/auth/dashboard',
+    failureRedirect: '/auth/login',
+    failureFlash: true,
+  })(req, res, next);
+};
 
 exports.getRegister = (req, res) => {
   res.render('users/register');
 };
-
 exports.postRegister = async (req, res) => {
   try {
     const hashedPassword = await bcrypt.hash(req.body.password, 10);
@@ -41,3 +42,8 @@ exports.getDashboard = (req, res) => {
   res.render('users/dashboard', { user: req.user });
 };
 
+exports.getLogout = (req, res) => {
+  req.logout();
+  req.flash('success_msg', 'You are logged out');
+  res.redirect('/auth/login');
+};
