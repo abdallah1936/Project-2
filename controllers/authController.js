@@ -3,20 +3,20 @@ const passport = require('passport');
 const User = require('../models/user');
 
 exports.getLogin = (req, res) => {
-  res.render('users/login', { user: null });
+  res.render('users/login');
 };
 
 
 exports.postLogin = (req, res, next) => {
   passport.authenticate('local', {
-    successRedirect: '/auth/dashboard',
-    failureRedirect: '/auth/login',
+    successRedirect: '/users/dashboard',
+    failureRedirect: '/users/login',
     failureFlash: true,
   })(req, res, next);
 };
 
 exports.getRegister = (req, res) => {
-  res.render('users/register', { user: null });
+  res.render('users/register');
 };
 
 exports.postRegister = async (req, res) => {
@@ -30,13 +30,13 @@ exports.postRegister = async (req, res) => {
     req.login(user, (err) => {
       if (err) {
         console.log(err);
-        return res.redirect('/auth/register');
+        return res.redirect('/users/register');
       }
       return res.redirect('/dashboard');
     });
   } catch (error) {
     console.log(error);
-    res.redirect('/auth/register');
+    res.redirect('/users/register');
   }
 };
 
@@ -47,5 +47,5 @@ exports.getDashboard = (req, res) => {
 exports.getLogout = (req, res) => {
   req.logout();
   req.flash('success_msg', 'You are logged out');
-  res.redirect('/auth/login');
+  res.redirect('/users/login');
 };
