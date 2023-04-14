@@ -3,21 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login</title>
+    <title>Dashboard</title>
 </head>
 <body>
-    <%- include ('../partials/header') %>    
-    <h1>Login</h1>
-    <form action="/users/login" method="POST">
-        <label for="username">Username:</label>
-        <input type="text" name="username" id="username" required>
-        <br>
-        <label for="password">Password:</label>
-        <input type="password" name="password" id="password" required>
-        <br>
-        <button type="submit">Login</button>
-    </form>
+    <%- include ('../partials/header') %>
     
-    <%- include('../partials/footer') %>
+    <h1>Dashboard</h1>
+    <p>Welcome, <%= user.username %>! You're now logged in.</p>
+    <p><a href="/workouts">View Workouts</a></p>
+    
+    <%- include ('../partials/footer') %>
 </body>
 </html>
