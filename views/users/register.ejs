@@ -9,7 +9,7 @@
     <%- include ('../partials/header') %>
     
     <h1>Sign Up</h1>
-    <form action="/auth/register" method="POST">
+    <form action="/register" method="POST">
         <label for="username">Username:</label>
         <input type="text" name="username" id="username" required>
         <br>
@@ -25,6 +25,6 @@
         <button type="submit">Sign Up</button>
     </form>
     
-    <% include ('../partials/footer') %>
+    <%- include ('../partials/footer') %>
 </body>
 </html>

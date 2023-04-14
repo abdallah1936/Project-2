@@ -1,51 +1,43 @@
-const bcrypt = require("bcryptjs");
-const passport = require("passport");
-const { User } = require("../models");
+const bcrypt = require('bcrypt');
+const passport = require('passport');
+const User = require('../models/user');
 
 exports.getLogin = (req, res) => {
-  res.render("users/login", { user: req.user });
+  res.render('users/login');
 };
 
-exports.getRegister = (req, res) => {
-  res.render("users/register", { user: req.user });
-};
-
-exports.postRegister = async (req, res) => {
-  const { name, email, password } = req.body;
-
-  const existingUser = await User.findOne({ where: { email } });
-  if (existingUser) {
-    return res.status(400).send("User already exists.");
-  }
-
-  const salt = await bcrypt.genSalt(10);
-  const hashedPassword = await bcrypt.hash(password, salt);
-
-  const newUser = await User.create({
-    name,
-    email,
-    password: hashedPassword,
-  });
-
-  if (!newUser) {
-    return res.status(500).send("Error creating user.");
-  }
-
-  req.login(newUser, (err) => {
-    if (err) {
-      return res.status(500).send("Error logging in after registration.");
-    }
-    return res.redirect("/users/dashboard");
-  });
-};
-
-exports.postLogin = passport.authenticate("local", {
-  successRedirect: "/users/dashboard",
-  failureRedirect: "/users/login",
+exports.postLogin = passport.authenticate('local', {
+  successRedirect: '/dashboard',
+  failureRedirect: '/auth/login',
   failureFlash: true,
 });
 
-exports.getLogout = (req, res) => {
-  req.logout();
-  res.redirect("/");
+exports.getRegister = (req, res) => {
+  res.render('users/register');
 };
+
+exports.postRegister = async (req, res) => {
+  try {
+    const hashedPassword = await bcrypt.hash(req.body.password, 10);
+    const user = await User.create({
+      username: req.body.username,
+      email: req.body.email,
+      password: hashedPassword,
+    });
+    req.login(user, (err) => {
+      if (err) {
+        console.log(err);
+        return res.redirect('/auth/register');
+      }
+      return res.redirect('/dashboard');
+    });
+  } catch (error) {
+    console.log(error);
+    res.redirect('/auth/register');
+  }
+};
+
+exports.getDashboard = (req, res) => {
+  res.render('users/dashboard', { user: req.user });
+};
+
