@@ -57,13 +57,14 @@ passport.deserializeUser(async (id, done) => {
 app.use(passport.initialize());
 app.use(passport.session());
 
-app.use('/auth', authRoutes);
+app.use('/users', authRoutes); 
 app.use('/workouts', workoutRoutes);
 
-app.get('/', (req, res) => {
-    res.render('index');
+app.get("/", (req, res) => {
+  res.render("index", { user: req.user });
 });
 
+
 app.listen(8000, () => {
-    console.log('Server started on port 3000');
+    console.log('Server started on port 8000');
 });
