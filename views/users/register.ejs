@@ -9,7 +9,7 @@
     <%- include ('../partials/header') %>
     
     <h1>Sign Up</h1>
-    <form action="/users/register" method="POST">
+    <form id="register-form" method="POST">
         <label for="username">Username:</label>
         <input type="text" name="username" id="username" required>
         <br>
@@ -26,5 +26,29 @@
     </form>
     
     <%- include ('../partials/footer') %>
+
+    <p id="error-message" style="color: red;"></p>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+          document.getElementById('register-form').addEventListener('submit', async (event) => {
+            event.preventDefault();
+            const formData = new FormData(event.target);
+            const response = await fetch('/register', {
+              method: 'POST',
+              body: formData,
+            });
+      
+            if (response.ok) {
+              window.location.href = '/users/workouts';
+            } else {
+              const errorMessageElement = document.getElementById('error-message');
+              errorMessageElement.textContent = 'Unable to create an account. Please try again.';
+            }
+          });
+        });
+      </script>
+      
+      
+      
 </body>
 </html>

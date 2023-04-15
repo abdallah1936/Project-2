@@ -20,5 +20,22 @@
     </form>
     
     <%- include ('../partials/footer') %>
+    <script>
+        document.getElementById('login-form').addEventListener('submit', async (event) => {
+          event.preventDefault();
+          const formData = new FormData(event.target);
+          const response = await fetch('/login', {
+            method: 'POST',
+            body: formData,
+          });
+      
+          if (response.ok) {
+            window.location.href = '/users/workouts';
+          } else {
+            alert('Invalid login credentials. Please try again.');
+          }
+        });
+      </script>
+      
 </body>
 </html>
