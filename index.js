@@ -3,11 +3,14 @@ const app = express();
 const session = require('express-session');
 const passport = require('passport');
 const LocalStrategy = require('passport-local').Strategy;
-const User = require('./models/user');
+const { User } = require('./models');
 const authRoutes = require('./routes/auth.js');
 const workoutRoutes = require('./routes/workout');
 const bodyParser = require("body-parser");
+const flash = require('connect-flash');
 const path = require("path");
+const bcrypt = require('bcrypt');
+
 
 app.use(express.urlencoded({ extended: true }));
 const PORT = process.env.PORT || 8000
@@ -22,23 +25,26 @@ app.use(session({
     saveUninitialized: true
 }));
 
-passport.use(new LocalStrategy({ usernameField: 'email' },
-  async (email, password, done) => {
-    try {
-      const user = await User.findOne({ where: { email } });
-      if (!user) {
-        return done(null, false, { message: 'Incorrect email.' });
+passport.use(
+  new LocalStrategy({ usernameField: 'email' },
+    async (email, password, done) => {
+      try {
+        const user = await User.findOne({ where: { email } });
+        if (!user) {
+          return done(null, false, { message: 'Incorrect email.' });
+        }
+        const isMatch = await bcrypt.compare(password, user.password);
+        if (!isMatch) {
+          return done(null, false, { message: 'Incorrect password.' });
+        }
+        return done(null, user);
+      } catch (err) {
+        return done(err);
       }
-      const isMatch = await bcrypt.compare(password, user.password);
-      if (!isMatch) {
-        return done(null, false, { message: 'Incorrect password.' });
-      }
-      return done(null, user);
-    } catch (err) {
-      return done(err);
     }
-  }
-));
+  )
+);
+
 passport.serializeUser((user, done) => {
   done(null, user.id);
 });
@@ -56,6 +62,9 @@ passport.deserializeUser(async (id, done) => {
 
 app.use(passport.initialize());
 app.use(passport.session());
+
+app.use(flash());
+
 
 app.use('/users', authRoutes); 
 app.use('/workouts', workoutRoutes);
