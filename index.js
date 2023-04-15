@@ -25,25 +25,28 @@ app.use(session({
     saveUninitialized: true
 }));
 
-passport.use(
-  new LocalStrategy({ usernameField: 'email' },
-    async (email, password, done) => {
-      try {
-        const user = await User.findOne({ where: { email } });
-        if (!user) {
-          return done(null, false, { message: 'Incorrect email.' });
-        }
-        const isMatch = await bcrypt.compare(password, user.password);
-        if (!isMatch) {
-          return done(null, false, { message: 'Incorrect password.' });
-        }
-        return done(null, user);
-      } catch (err) {
-        return done(err);
+passport.use(new LocalStrategy(
+  async (username, password, done) => {
+    try {
+      const user = await db.user.findOne({ where: { username: username } });
+
+      if (!user) {
+        return done(null, false, { message: 'Incorrect username.' });
       }
+
+      const validPassword = await user.validPassword(password);
+
+      if (!validPassword) {
+        return done(null, false, { message: 'Incorrect password.' });
+      }
+
+      return done(null, user);
+    } catch (error) {
+      return done(error);
     }
-  )
-);
+  }
+));
+
 
 passport.serializeUser((user, done) => {
   done(null, user.id);
