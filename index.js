@@ -68,7 +68,7 @@ app.use((req, res, next) => {
 });
 
 app.use('/users', authRoutes);
-app.use('/users/workouts', workoutRoutes);
+app.use('/workouts', workoutRoutes);
 
 app.get('/', (req, res) => {
   res.redirect('/users/login');

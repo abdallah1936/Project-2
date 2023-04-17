@@ -8,20 +8,17 @@ router.get('/', (req, res) => {
   res.render('home');
 });
 
-
 router.get('/login', (req, res) => {
   res.render('users/login', { user: req.user });
 });
 
-
 router.post('/login', (req, res, next) => {
   passport.authenticate('local', {
-    successRedirect: '/',
+    successRedirect: '/users/workouts/dashboard',
     failureRedirect: '/users/login',
     failureFlash: true,
   })(req, res, next);
 });
-
 
 router.get("/register", (req, res) => {
   let errors = [];

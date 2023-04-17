@@ -3,11 +3,12 @@ const { Workout, user, favoriteWorkout, associations } = require('../models');
 const dashboard = async (req, res) => {
   try {
     const workouts = await Workout.findAll({ where: { userId: req.user.id } });
-    res.render('dashboard', { workouts, user: req.user });
+    res.render('workouts/dashboard', { workouts, user: req.user });
   } catch (error) {
     res.status(500).json({ message: 'Error retrieving workouts', error });
   }
 };
+
 
 const newWorkout_get = async (req, res) => {
   res.render('workouts/new', { user: req.user });
