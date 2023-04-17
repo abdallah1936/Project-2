@@ -1,21 +1,27 @@
 const express = require("express");
 const router = express.Router();
 const passport = require("passport");
-const bcrypt = require("bcrypt");
+const bcrypt = require("bcryptjs");
 const { User } = require("../models");
 
-router.get("/login", (req, res) => {
-  res.render("users/login");
+router.get('/', (req, res) => {
+  res.render('home');
 });
 
-router.post(
-  "/login",
-  passport.authenticate("local", {
-    successRedirect: "/users/workouts",
-    failureRedirect: "/users/login",
+
+router.get('/login', (req, res) => {
+  res.render('users/login', { user: req.user });
+});
+
+
+router.post('/login', (req, res, next) => {
+  passport.authenticate('local', {
+    successRedirect: '/',
+    failureRedirect: '/users/login',
     failureFlash: true,
-  })
-);
+  })(req, res, next);
+});
+
 
 router.get("/register", (req, res) => {
   let errors = [];

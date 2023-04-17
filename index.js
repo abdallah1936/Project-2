@@ -9,8 +9,10 @@ const workoutRoutes = require('./routes/workout');
 const bodyParser = require("body-parser");
 const flash = require('connect-flash');
 const path = require("path");
-const bcrypt = require('bcrypt');
-const port = 8000;
+const bcrypt = require('bcryptjs');
+
+
+const PORT = process.env.PORT || 8000;
 
 app.set("view engine", "ejs");
 app.use(express.static("public"));
@@ -72,6 +74,6 @@ app.get('/', (req, res) => {
   res.redirect('/users/login');
 });
 
-app.listen(port, () => {
-  console.log(`Listening on port ${port}`);
+app.listen(PORT, () => {
+  console.log(`Listening on port ${PORT}`);
 });
