@@ -1,24 +1,27 @@
 const express = require("express");
 const router = express.Router();
 const bcrypt = require("bcryptjs");
-const { User } = require("../models");
 const passport = require("passport");
+const User = require("../models/user");
 
-// GET login page
-router.get("/login", (req, res) => {
-  res.render("users/login");
+router.get('/login', (req, res) => {
+  res.render('users/login', { user: req.user });
 });
 
-// GET register page
-router.get("/register", (req, res) => {
-  res.render("users/register");
+router.post('/login', (req, res, next) => {
+  passport.authenticate('local', {
+    successRedirect: '/users/dashboard',
+    failureRedirect: '/users/login',
+    failureFlash: true,
+  })(req, res, next);
 });
 
-// POST register
-router.post('/register', (req, res) => {
+router.get('/register', (req, res) => {
+  res.render('users/register', { user: req.user });
+});
+
+router.post('/register', async (req, res) => {
   const { name, email, username, password, password2 } = req.body;
-
-  router.post("/register", authController.postRegister);
 
   // Validate input
   let errors = [];
@@ -36,7 +39,7 @@ router.post('/register', (req, res) => {
   }
 
   if (errors.length > 0) {
-    res.render("users/register", {
+    return res.render("users/register", {
       errors,
       name,
       email,
@@ -44,61 +47,51 @@ router.post('/register', (req, res) => {
       password,
       password2,
     });
-  } else {
-    User.findOne({ username: username }).then((user) => {
-      if (user) {
-        errors.push({ msg: "Username is already taken" });
-        res.render("users/register", {
-          errors,
-          name,
-          email,
-          username,
-          password,
-          password2,
-        });
-      } else {
-        const newUser = new User({
-          name,
-          email,
-          username,
-          password,
-        });
+  }
 
-        bcrypt.genSalt(10, (err, salt) => {
-          bcrypt.hash(newUser.password, salt, (err, hash) => {
-            if (err) throw err;
-            newUser.password = hash;
-            newUser
-              .save()
-              .then((user) => {
-                req.flash(
-                  "success_msg",
-                  "You are now registered and can log in"
-                );
-                res.redirect("/users/login");
-              })
-              .catch((err) => console.log(err));
-          });
-        });
-      }
+  try {
+    const userExists = await User.findOne({ where: { username } });
+    if (userExists) {
+      errors.push({ msg: "Username is already taken" });
+      return res.render("users/register", {
+        errors,
+        name,
+        email,
+        username,
+        password,
+        password2,
+      });
+    }
+
+    const hashedPassword = await bcrypt.hash(password, 10);
+    const user = await User.create({
+      name,
+      username,
+      email,
+      password: hashedPassword,
     });
+
+    req.login(user, (err) => {
+      if (err) {
+        console.log(err);
+        return res.redirect('/users/register');
+      }
+      return res.redirect('/users/dashboard');
+    });
+  } catch (error) {
+    console.log(error);
+    res.redirect('/users/register');
   }
 });
 
-// POST login
-router.post("/login", (req, res, next) => {
-  passport.authenticate("local", {
-    successRedirect: "/users/dashboard",
-    failureRedirect: "/users/login",
-    failureFlash: true,
-  })(req, res, next);
+router.get('/dashboard', (req, res) => {
+  res.render('users/dashboard', { user: req.user });
 });
 
-// GET logout
-router.get("/logout", (req, res) => {
+router.get('/logout', (req, res) => {
   req.logout();
-  req.flash("success_msg", "You are logged out");
-  res.redirect("/users/login");
+  req.flash('success_msg', 'You are logged out');
+  res.redirect('/users/login');
 });
 
 module.exports = router;

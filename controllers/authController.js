@@ -6,7 +6,6 @@ exports.getLogin = (req, res) => {
   res.render('users/login', { user: req.user });
 };
 
-
 exports.postLogin = (req, res, next) => {
   passport.authenticate('local', {
     successRedirect: '/users/dashboard',
@@ -32,7 +31,7 @@ exports.postRegister = async (req, res) => {
         console.log(err);
         return res.redirect('/users/register');
       }
-      return res.redirect('/dashboard');
+      return res.redirect('/users/dashboard');
     });
   } catch (error) {
     console.log(error);
