@@ -1,41 +1,104 @@
-const express = require('express');
+const express = require("express");
 const router = express.Router();
-const passport = require('passport');
-const authController = require('../controllers/authController');
-const { ensureAuthenticated } = require('../config/authenticate');
+const bcrypt = require("bcryptjs");
+const { User } = require("../models");
+const passport = require("passport");
 
-router.get('/register', authController.getRegister);
-router.post('/register', authController.postRegister);
+// GET login page
+router.get("/login", (req, res) => {
+  res.render("users/login");
+});
 
-router.get('/login', authController.getLogin);
-router.post('/login', passport.authenticate('local', {
-  successRedirect: '/home',
-  failureRedirect: '/users/login',
-  failureFlash: true
-}));
+// GET register page
+router.get("/register", (req, res) => {
+  res.render("users/register");
+});
 
-router.post('/register', async (req, res, next) => {
-  try {
-    const newUser = await db.user.create({
-      username: req.body.username,
-      password: req.body.password,
+// POST register
+router.post('/register', (req, res) => {
+  const { name, email, username, password, password2 } = req.body;
+
+  router.post("/register", authController.postRegister);
+
+  // Validate input
+  let errors = [];
+
+  if (!name || !email || !username || !password || !password2) {
+    errors.push({ msg: "Please fill in all fields" });
+  }
+
+  if (password !== password2) {
+    errors.push({ msg: "Passwords do not match" });
+  }
+
+  if (password.length < 6) {
+    errors.push({ msg: "Password should be at least 6 characters" });
+  }
+
+  if (errors.length > 0) {
+    res.render("users/register", {
+      errors,
+      name,
+      email,
+      username,
+      password,
+      password2,
     });
+  } else {
+    User.findOne({ username: username }).then((user) => {
+      if (user) {
+        errors.push({ msg: "Username is already taken" });
+        res.render("users/register", {
+          errors,
+          name,
+          email,
+          username,
+          password,
+          password2,
+        });
+      } else {
+        const newUser = new User({
+          name,
+          email,
+          username,
+          password,
+        });
 
-    req.login(newUser, (err) => {
-      if (err) {
-        return next(err);
+        bcrypt.genSalt(10, (err, salt) => {
+          bcrypt.hash(newUser.password, salt, (err, hash) => {
+            if (err) throw err;
+            newUser.password = hash;
+            newUser
+              .save()
+              .then((user) => {
+                req.flash(
+                  "success_msg",
+                  "You are now registered and can log in"
+                );
+                res.redirect("/users/login");
+              })
+              .catch((err) => console.log(err));
+          });
+        });
       }
-      return res.redirect('/home');
     });
-  } catch (error) {
-    console.error(error);
-    res.redirect('/users/register');
   }
 });
 
+// POST login
+router.post("/login", (req, res, next) => {
+  passport.authenticate("local", {
+    successRedirect: "/users/dashboard",
+    failureRedirect: "/users/login",
+    failureFlash: true,
+  })(req, res, next);
+});
 
-router.get('/logout', authController.getLogout);
-
-router.get('/dashboard', ensureAuthenticated, authController.getDashboard);
+// GET logout
+router.get("/logout", (req, res) => {
+  req.logout();
+  req.flash("success_msg", "You are logged out");
+  res.redirect("/users/login");
+});
 
 module.exports = router;

@@ -10,46 +10,41 @@ const bodyParser = require("body-parser");
 const flash = require('connect-flash');
 const path = require("path");
 const bcrypt = require('bcrypt');
+const port = 8000;
 
 app.set("view engine", "ejs");
+app.use(express.static("public"));
 
-app.use(express.static(path.join(__dirname, "public")));
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
 app.use(
   session({
-    secret: 'workoutappsecret',
+    secret: "secret",
     resave: false,
     saveUninitialized: false,
   })
 );
 
+app.use(flash());
+
 app.use(passport.initialize());
 app.use(passport.session());
-app.use(flash());
 
 passport.use(
   new LocalStrategy(function (username, password, done) {
-    User.findOne({ where: { username: username } })
-      .then((user) => {
-        if (!user) {
-          return done(null, false, { message: 'Incorrect username.' });
+    User.findOne({ where: { username: username } }).then((user) => {
+      if (!user) {
+        return done(null, false, { message: "Incorrect username." });
+      }
+      bcrypt.compare(password, user.password, function (err, res) {
+        if (res) {
+          return done(null, user);
+        } else {
+          return done(null, false, { message: "Incorrect password." });
         }
-        bcrypt.compare(password, user.password, (err, isMatch) => {
-          if (err) {
-            throw err;
-          }
-          if (isMatch) {
-            return done(null, user);
-          } else {
-            return done(null, false, { message: 'Incorrect password.' });
-          }
-        });
-      })
-      .catch((err) => {
-        return done(err);
       });
+    });
   })
 );
 
@@ -58,17 +53,25 @@ passport.serializeUser(function (user, done) {
 });
 
 passport.deserializeUser(function (id, done) {
-  User.findByPk(id)
-    .then((user) => {
-      done(null, user);
-    })
-    .catch((err) => {
-      done(err);
-    });
+  User.findByPk(id).then((user) => {
+    done(null, user);
+  });
 });
 
-app.use('/', authRoutes);
-app.use('/workout', workoutRoutes);
+app.use((req, res, next) => {
+  res.locals.currentUser = req.user;
+  res.locals.success_messages = req.flash('success_messages');
+  res.locals.error_messages = req.flash('error_messages');
+  next();
+});
 
-const PORT = process.env.PORT || 8000;
-app.listen(PORT, () => console.log(`Listening on port ${PORT}`));
+app.use('/users', authRoutes);
+app.use('/users/workouts', workoutRoutes);
+
+app.get('/', (req, res) => {
+  res.redirect('/users/login');
+});
+
+app.listen(port, () => {
+  console.log(`Listening on port ${port}`);
+});
