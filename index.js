@@ -11,72 +11,64 @@ const flash = require('connect-flash');
 const path = require("path");
 const bcrypt = require('bcrypt');
 
+app.set("view engine", "ejs");
 
-app.use(express.urlencoded({ extended: true }));
-const PORT = process.env.PORT || 8000
-app.set('view engine', 'ejs');
-app.set("views", path.join(__dirname, "views"));
+app.use(express.static(path.join(__dirname, "public")));
+app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.json());
 
-app.use(express.static(__dirname + "/public"));
-
-app.use(session({
-    secret: 'your-session-secret',
+app.use(
+  session({
+    secret: 'workoutappsecret',
     resave: false,
-    saveUninitialized: true
-}));
-
-passport.use(new LocalStrategy(
-  async (username, password, done) => {
-    try {
-      const user = await db.user.findOne({ where: { username: username } });
-
-      if (!user) {
-        return done(null, false, { message: 'Incorrect username.' });
-      }
-
-      const validPassword = await user.validPassword(password);
-
-      if (!validPassword) {
-        return done(null, false, { message: 'Incorrect password.' });
-      }
-
-      return done(null, user);
-    } catch (error) {
-      return done(error);
-    }
-  }
-));
-
-
-passport.serializeUser((user, done) => {
-  done(null, user.id);
-});
-
-passport.deserializeUser(async (id, done) => {
-  try {
-    const user = await User.findByPk(id);
-    done(null, user);
-  } catch (error) {
-    done(error, null);
-  }
-});
-
-
+    saveUninitialized: false,
+  })
+);
 
 app.use(passport.initialize());
 app.use(passport.session());
-
 app.use(flash());
 
+passport.use(
+  new LocalStrategy(function (username, password, done) {
+    User.findOne({ where: { username: username } })
+      .then((user) => {
+        if (!user) {
+          return done(null, false, { message: 'Incorrect username.' });
+        }
+        bcrypt.compare(password, user.password, (err, isMatch) => {
+          if (err) {
+            throw err;
+          }
+          if (isMatch) {
+            return done(null, user);
+          } else {
+            return done(null, false, { message: 'Incorrect password.' });
+          }
+        });
+      })
+      .catch((err) => {
+        return done(err);
+      });
+  })
+);
 
-app.use('/users', authRoutes); 
-app.use('/workouts', workoutRoutes);
-
-app.get("/", (req, res) => {
-  res.render("index", { user: req.user });
+passport.serializeUser(function (user, done) {
+  done(null, user.id);
 });
 
-
-app.listen(8000, () => {
-    console.log('Server started on port 8000');
+passport.deserializeUser(function (id, done) {
+  User.findByPk(id)
+    .then((user) => {
+      done(null, user);
+    })
+    .catch((err) => {
+      done(err);
+    });
 });
+
+app.use('/', authRoutes);
+app.use('/workout', workoutRoutes);
+
+const PORT = process.env.PORT || 8000;
+app.listen(PORT, () => console.log(`Listening on port ${PORT}`));
