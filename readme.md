@@ -13,14 +13,14 @@ This will be a workout tracking app. The user would need to insert a muscle that
 
 ### Restful Routing Chart
 
-![Restful-routing-chart](Pics.png/restfulChart.png)
+![Restful-routing-chart](/public/Pics.png/restfulChart.png)
 
 ### Wireframes of all user views
 
-![wireframe-exercises](Pics.png/exercises.png)
-![wireframe-login](Pics.png/login.png)
-![wireframe-new](Pics.png/new.png)
-![wireframe-home](Pics.png/Home.png)
+![wireframe-exercises](/public/Pics.png/exercises.png)
+![wireframe-login](/public/Pics.png/login.png)
+![wireframe-new](/public/Pics.png/new.png)
+![wireframe-home](/public/Pics.png/Home.png)
 
 ### User Stories
 

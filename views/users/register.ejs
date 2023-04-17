@@ -1,54 +1,63 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sign Up</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Register</title>
+
+  <%- include('../partials/navbar') %>
+
+<!-- bootstrap -->
+  <link
+    href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+    rel="stylesheet"
+  />
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 </head>
 <body>
-    <%- include ('../partials/header') %>
-    
-    <h1>Sign Up</h1>
-    <form id="register-form" method="POST">
-        <label for="username">Username:</label>
-        <input type="text" name="username" id="username" required>
-        <br>
-        <label for="email">Email:</label>
-        <input type="email" name="email" id="email" required>
-        <br>
-        <label for="password">Password:</label>
-        <input type="password" name="password" id="password" required>
-        <br>
-        <label for="password2">Confirm Password:</label>
-        <input type="password" name="password2" id="password2" required>
-        <br>
-        <button type="submit">Sign Up</button>
+  <div class="container">
+    <h1 class="text-center">Register</h1>
+    <form id="registerForm">
+      <div class="form-group">
+        <label for="email">Email address</label>
+        <input type="email" class="form-control" id="email" placeholder="Enter email" />
+      </div>
+      <div class="form-group">
+        <label for="password">Password</label>
+        <input type="password" class="form-control" id="password" placeholder="Password" />
+      </div>
+      <button type="submit" class="btn btn-primary">Register</button>
     </form>
-    
-    <%- include ('../partials/footer') %>
+  </div>
 
-    <p id="error-message" style="color: red;"></p>
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-          document.getElementById('register-form').addEventListener('submit', async (event) => {
-            event.preventDefault();
-            const formData = new FormData(event.target);
-            const response = await fetch('/register', {
-              method: 'POST',
-              body: formData,
-            });
-      
-            if (response.ok) {
-              window.location.href = '/users/workouts';
-            } else {
-              const errorMessageElement = document.getElementById('error-message');
-              errorMessageElement.textContent = 'Unable to create an account. Please try again.';
-            }
-          });
+  <script>
+    document.getElementById("registerForm").addEventListener("submit", async (e) => {
+      e.preventDefault();
+
+      const email = document.getElementById("email").value;
+      const password = document.getElementById("password").value;
+
+      try {
+        const response = await fetch("/register", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ email, password }),
         });
-      </script>
-      
-      
-      
+
+        if (response.status === 200) {
+          window.location.href = "/users/workouts";
+        } else {
+          console.log("Error in registration.");
+        }
+      } catch (err) {
+        console.error(err);
+      }
+    });
+  </script>
 </body>
 </html>
